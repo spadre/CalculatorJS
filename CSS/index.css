@@ -1,0 +1,33 @@
+.calculatorBase{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+.calculatorOperation{
+    width: 158px;
+    padding-bottom: 15px;
+    padding-top: 15px;
+}
+.calculatorDigits{
+    display: flex;
+    width: 158px;
+}
+
+
+
+.calculatorNumbers button{
+    width: 24px;
+    height: 24px;
+}
+
+
+.calculatorOperations button{
+    width: 24px;
+    height: 24px;
+}
+
+#equal{
+    width: 52px;
+}

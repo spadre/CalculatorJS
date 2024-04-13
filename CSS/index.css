@@ -13,14 +13,17 @@
 .calculatorDigits{
     display: flex;
     width: 158px;
+    justify-content: center;
+    
 }
-
 
 
 .calculatorNumbers button{
     width: 24px;
     height: 24px;
+    
 }
+
 
 
 .calculatorOperations button{
@@ -29,5 +32,8 @@
 }
 
 #equal{
+    width: 52px;
+}
+#clear{
     width: 52px;
 }

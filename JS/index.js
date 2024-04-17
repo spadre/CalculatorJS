@@ -31,9 +31,6 @@ function divideNum(numA,numB){
 
 }
 
-
-
-
 function operate(numA,operator,numB){
 
     switch(operator){
@@ -59,8 +56,79 @@ function clearAll(){
     document.querySelector("#dot").disabled = false;
 }
 
+function dotFind(){
+    var regEx = new RegExp("[.]");
+    
+    if(regEx.test(numA.toString())){
+        document.querySelector("#dot").disabled = true;
+    }
+    else if(regEx.test(numB.toString())){
+        document.querySelector("#dot").disabled = true;
+    }
+    else{document.querySelector("#dot").disabled = false;}
+}
+
+
+// userInput function allows user to use keyboard for calculator. 
+
+function userInput(inputField,userInput){
+console.log(userInput);
+
+if(userInput == "*" || userInput == "/" || userInput == "+" || userInput == "-" ){
+    operator = userInput;
+}
+
+if((inputField.value.includes("*")||inputField.value.includes("/")||inputField.value.includes("-")||inputField.value.includes("+")) && userInput > 0){
+    numB += userInput;
+}
+else if (userInput > 0 || userInput =="."){ 
+    numA += userInput;
+    
+}
+
+if(userInput == "Enter"){
+    result = operate(parseFloat(numA),operator,parseFloat(numB));
+    document.querySelector("#operationInput").value = result;
+    
+    numA = 0;
+    numA = result;
+    numB = 0;
+}else if (userInput == "Backspace"){
+    undoChange();
+}
+
+}
+
+// function to undo numbers or operations
+function undoChange(){
+    var undoValueA = numA.toString();
+    var undoValueB = numB.toString();
+    const inputField = document.querySelector("#operationInput");
+    if((inputField.value.includes("*")||inputField.value.includes("/")||inputField.value.includes("-")||inputField.value.includes("+"))){
+        undoValueB = undoValueB.slice(0,-1);
+        numB = undoValueB;
+        console.log("Undo: "+numB);
+    }
+    else { 
+        undoValueA = undoValueA.slice(0,-1);
+        numA = undoValueA;
+        console.log("Undo: "+numA);
+    }
+    
+
+}
+
+// numbers using only two decimals. toFixed() didn't work properly
+function parseFloatNew(number){
+    number = number.toString();
+    number = number.slice(0,(number.indexOf(".")) + 2 + 1);
+    return Number(number);
+}
+
+
+
 // Number buttons
-const numberBtns = document.querySelectorAll("div.calculatorNumbers > button");
+const numberBtns = document.querySelectorAll("div.calculatorNumbers > .numbers");
 numberBtns.forEach((button) => {
 
     button.addEventListener("click", ()=>{
@@ -72,29 +140,11 @@ numberBtns.forEach((button) => {
         }
         else{ 
             numA += button.textContent;
-            
+            console.log("InputField: "+ inputField.includes(""));
         }
     });
     
 });
-
-// Dot button
-
-const dotBtn = document.querySelector("#dot")
-dotBtn.addEventListener("click",()=>{
-
-    var regEx = new RegExp("[.]");
-    
-    if(regEx.test(numA.toString())){
-        document.querySelector("#dot").disabled = true;
-    }
-    else if(regEx.test(numB.toString())){
-        document.querySelector("#dot").disabled = true;
-    }
-    else{document.querySelector("#dot").disabled = false;}
-
-});
-
 
 // Operation buttons - + * / 
 
@@ -104,27 +154,31 @@ operationBtns.forEach((button) => {
     button.addEventListener("click", ()=>{
         var inputField = document.querySelector("#operationInput").value;
 
-        // checks if <div> with "operationInput" id has any operation already and if it has then calculates numbers. 
-        if(inputField.includes("*")||inputField.includes("/")||inputField.includes("-")||inputField.includes("+")){
-            document.querySelector("#operationInput").value = "";
-            result = operate(parseFloat(numA),operator,parseFloat(numB));
-            numA = result;
-            //parseFloatNew(numA);
+        //tests if inputfield has number already if it does operation button can be used
+        if(/\d/.test(inputField)){
+        
+            // checks if <div> with "operationInput" id has any operation already and if it has then calculates numbers. 
+            if(inputField.includes("*")||inputField.includes("/")||inputField.includes("-")||inputField.includes("+")){
+                document.querySelector("#operationInput").value = "";
+                result = operate(parseFloat(numA),operator,parseFloat(numB));
+                numA = result;
 
-            document.querySelector("#operationInput").value += numA;
-            document.querySelector("#operationInput").value += button.textContent;
 
-            console.log("NumA: "+numA+"\nNumB: "+numB+"\nResult: "+result)
-            numB = 0;
-            operator = button.textContent;
-            console.log("NumA: "+numA+"\nNumB: "+numB+"\nResult: "+result)
-            document.querySelector("#dot").disabled = false;
-        }
-        else{
-            document.querySelector("#operationInput").value += button.textContent;
-            operator = button.textContent;
-            document.querySelector("#dot").disabled = false;
-        }
+                document.querySelector("#operationInput").value += numA;
+                document.querySelector("#operationInput").value += button.textContent;
+
+                console.log("NumA: "+numA+"\nNumB: "+numB+"\nResult: "+result)
+                numB = 0;
+                operator = button.textContent;
+                console.log("NumA: "+numA+"\nNumB: "+numB+"\nResult: "+result)
+                document.querySelector("#dot").disabled = false;
+            }
+            else{
+                document.querySelector("#operationInput").value += button.textContent;
+                operator = button.textContent;
+                document.querySelector("#dot").disabled = false;
+            }
+        }else console.log("noup");
 
     });
     
@@ -140,29 +194,34 @@ const equalButton = document.querySelector("div.calculatorOperations > #equal");
 equalButton.addEventListener("click",() => {
     result = operate(parseFloat(numA),operator,parseFloat(numB));
     document.querySelector("#operationInput").value = result;
-
+    
     numA = 0;
     numA = result;
     numB = 0;
+    
     console.log(result)
 });
 
 
-// numbers using only two decimals. toFixed() didn't work properly
-function parseFloatNew(number){
-    number = number.toString();
-    number = number.slice(0,(number.indexOf(".")) + 2 + 1);
-    return Number(number);
-}
 
 
+const inputField = document.querySelector("#operationInput");
+inputField.addEventListener("change",()=>{
+    dotFind();
+});
 
-test();
-function test(){
-    
-    var testi1 = "415142.51",testi2 = 4512, tulos =0;
-    
-    console.log(isNaN(parseFloatNew(testi1)))
-    console.log(isNaN(testi2))
+// user inputs transferred to userInput function
+inputField.addEventListener("keydown",(e)=>{
+    if((e.key >= 0 || e.key == "/"||e.key =="*"||e.key =="-"||e.key =="+"||e.key =="."||e.key =='Enter'|| e.key =="Backspace")){
+        userInput(inputField,e.key);
+        
+    }else e.preventDefault();
+    console.log("NumA: "+numA+"\nnumB: "+numB+"\nOperator: "+operator+"\nEvent: "+e.key+"\nInput: "+e.inputType)
+});
 
-}
+// undo button
+const backBtn = document.querySelector("#undo");
+backBtn.addEventListener("click",()=>{
+    undoChange();
+    inputField.value = inputField.value.slice(0,-1);
+});
